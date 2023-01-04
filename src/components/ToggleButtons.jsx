@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 
 
 const ToggleButtons = () => {
-    // const [mode, SetMode] = useState("Click on the buttons");
     const [modeStatus, SetModeStatus] = useState("ZZZ");
     const [moisture, SetMoisture] = useState(0.0);
     const [btncolor, SetBtnColor] = useState("");
@@ -14,17 +13,13 @@ const ToggleButtons = () => {
     const [mode, setMode] = useState('automatic');
     const [count, setCount] = useState(0);
 
+    // converting moisture to percentage
     useEffect(() => {
-        // let dummy = (2700 - moisture) * 0.72 / 100;
-        // SetVsm(dummy);
-
         let x_new = 0.0;
         let a = 0;
         let b = 100;
-
         let min_x = 900;
         let max_x = 2700;
-        let x = 12;
 
         x_new = b - ((b - a) * (moisture - min_x)) / (max_x - min_x) + a;
         x_new = x_new.toFixed(2);
@@ -32,6 +27,7 @@ const ToggleButtons = () => {
 
     }, [moisture]);
 
+    // toggle between manual and automatic mode
     useEffect(() => {
         if (mode === 'automatic') {
             SetBtnColor("disabled");
@@ -62,14 +58,7 @@ const ToggleButtons = () => {
         }
     }, [mode, count]);
 
-
-    // function onChangeValue(event) {
-    //     SetModeStatus(event.target.value);
-    //     console.log(event.target.value);
-
-    // }
-
-
+    // turn on the valves
     const turnOn = () => {
         const options = {
             method: 'POST',
@@ -90,6 +79,7 @@ const ToggleButtons = () => {
         });
     }
 
+    // turn off the valves
     const turnOff = () => {
         console.log("BYEEEEEEEEEEEEEEEEEEE");
         SetModeStatus("welcome");
@@ -114,6 +104,7 @@ const ToggleButtons = () => {
         });
     }
 
+    // trigger when to turn on and turn off based on threshold
     useEffect(() => {
         if (moisture > 1800) {
             turnOn();
@@ -140,38 +131,6 @@ const ToggleButtons = () => {
             </div>
 
             <div className="divider"></div>
-
-            <div className="flex flex-col items-center justify-center flex-end">
-                {/* <div className="form-control">
-                    <label className="label cursor-pointer">
-                        <span className="label-text mr-2">Manual Mode</span>
-                        <input type="radio" name="radio-10" className="radio checked:radio-info" onChange={handleChange} checked />
-                    </label>
-                </div> */}
-                {/* <div className="form-control">
-                    <label className="label cursor-pointer">
-                        <span className="label-text mr-2">Automatic Mode</span>
-                        <input type="radio" name="radio-10" className="radio checked:radio-success" checked />
-                    </label>
-                </div> */}
-
-
-
-                {/* <div onChange={onChangeValue}>
-                    <label className="label cursor-pointer">
-                        <span className="label-text mr-2">Manual Mode</span>
-                        <input type="radio" value="Manual" name="modeStatus" className="radio checked:radio-info" checked={modeStatus === "Manual"} />
-                    </label>
-                    <label className="label cursor-pointer">
-                        <span className="label-text mr-2">Automatic Mode</span>
-                        <input type="radio" value="Automatic" name="modeStatus" className="radio checked:radio-success" checked={modeStatus === "Automatic"} />
-                    </label> */}
-
-                {/* <input type="radio" value="Male" name="gender" checked={gender === "Male"} /> Male
-                    <input type="radio" value="Female" name="gender" checked={gender === "Female"} /> Female
-                    <input type="radio" value="Other" name="gender" checked={gender === "Other"} /> Other 
-                    </div>*/}
-            </div>
 
             <div className="flex flex-col items-center justify-center flex-end">
                 <p>Current Volumetric Moisture: {vsm}</p>
