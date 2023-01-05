@@ -141,6 +141,23 @@ const Dashboard = () => {
         }
     }, [currentMoisture]);
 
+    //function to call temperature and humidity
+    const getTemp = () => {
+        const options = {
+            method: 'GET',
+            url: 'https://api.openweathermap.org/data/2.5/weather',
+            params: { lat: '13', lon: '77.5', appid: '406b154331868aa69ddc3dd64454c8c6' }
+        };
+
+        axios.request(options).then(function (response) {
+            let temp = response.data.main.temp - 273.15;
+            temp = temp.toFixed(2);
+            setTemperature(temp);
+            console.log(response.data);
+        }).catch(function (error) {
+            console.error(error);
+        });
+    }
 
     return (
         <>
@@ -243,7 +260,7 @@ const Dashboard = () => {
                             {/* current temperature */}
                             <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
-                                    <h2 className="card-title">Temperature</h2>
+                                    <h2 className="card-title" onClick={getTemp}>Temperature</h2>
                                     <div className="card-actions">
                                         <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>{temperature} °C</h3>
                                     </div>
@@ -253,9 +270,9 @@ const Dashboard = () => {
                             {/* current humidity */}
                             <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
-                                    <h2 className="card-title">Humidity</h2>
+                                    <h2 className="card-title">Rainfall</h2>
                                     <div className="card-actions">
-                                        <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>{humidity}</h3>
+                                        <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>0 %</h3>
                                     </div>
                                 </div>
                             </div>
