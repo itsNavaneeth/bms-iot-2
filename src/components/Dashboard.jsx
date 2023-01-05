@@ -205,7 +205,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* second card */}
-                <div className="card bg-base-100 shadow-xl col-span-3  m-2">
+                <div className="card bg-base-100 shadow-xl col-span-3 m-2">
                     <div className="card-body">
                         <h1 className="card-title justify-center">Plant Information</h1>
                         <div className="divider"></div>

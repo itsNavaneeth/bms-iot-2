@@ -60,7 +60,75 @@ const Dashboard2 = () => {
 
     return (
         <>
+            <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">Graph Information</h1>
+            <div className="mt-4 mx-5 grid md:grid-cols-10">
+                {/* first card */}
+                <div className="card bg-base-100 border-2 border-black col-span-10 lg:col-span-7 m-2">
+                    <div className="card-body">
+                        <h2 className="card-title justify-center items-center text-center">Graph will come here</h2>
 
+                    </div>
+                </div>
+
+                {/* second card */}
+                <div className="card bg-base-100 border-2 border-black col-span-10 lg:col-span-3 m-2">
+                    <div className="card-body">
+                        <h1 className="card-title justify-center">Graph Information</h1>
+
+                        <div className="divider"></div>
+
+                        <div className="form-control">
+                            <label className="label cursor-pointer justify-start">
+                                <input type="checkbox" checked className="checkbox" />
+                                <span className="label-text ml-2">Soil Moisture: </span>
+                            </label>
+                            <label className="label cursor-pointer justify-start">
+                                <input type="checkbox" checked className="checkbox" />
+                                <span className="label-text ml-2">Temperature: </span>
+                            </label>
+                            <label className="label cursor-pointer justify-start">
+                                <input type="checkbox" checked className="checkbox" />
+                                <span className="label-text ml-2">Rainfall: </span>
+                            </label>
+                        </div>
+
+                        <div className="divider"></div>
+
+
+                        {/* table */}
+                        <div className="overflow-x-auto">
+                            <table className="table w-full">
+                                {/* <!-- head --> */}
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Job</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {/* <!-- row 1 --> */}
+                                    <tr>
+                                        <td>Cy Ganderton</td>
+                                        <td>idk</td>
+                                    </tr>
+                                    {/* <!-- row 2 --> */}
+                                    <tr>
+                                        <td>Hart Hagerty</td>
+                                        <td>idk</td>
+                                    </tr>
+                                    {/* <!-- row 3 --> */}
+                                    <tr>
+                                        <td>Brice Swyre</td>
+                                        <td>idk</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </>
     );
 };
