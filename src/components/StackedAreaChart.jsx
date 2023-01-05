@@ -11,7 +11,7 @@ const StackedLineChart = ({ data }) => {
 
   return (
 
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer>
       <LineChart
         min-width="250px"
         width={500}

@@ -16,10 +16,8 @@ const LineChartz = ({ data }) => {
   const info = data.data;
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer>
       <LineChart
-        width={500}
-        height={300}
         data={info}
         margin={{
           top: 5,

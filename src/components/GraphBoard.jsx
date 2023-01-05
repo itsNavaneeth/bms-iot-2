@@ -44,7 +44,25 @@ const Dashboard = () => {
         const data = convData(info, -1);
         setWaterData(data);
       });
-  }, []);
+
+
+
+
+    const interval = setInterval(() => {
+      console.log("refreshed");
+      //Fetch the machine learning model ressults from thingspeak
+      fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
+        .then((response) => response.json())
+        .then((info) => {
+          const data = convData(info, -1);
+          setWaterData(data);
+        });
+
+    }, 15000);
+
+    return () => clearInterval(interval);
+
+  }, [waterData]);
 
   return (
     <>
