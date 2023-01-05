@@ -12,6 +12,8 @@ const Dashboard = () => {
     const [irrigationDuration, setIrrigationDuration] = useState(0.0);
     const [irrigationQuantity, setIrrigationQuantity] = useState(0.0);
     const [moisturePercentageColor, setMoisturePercentageColor] = useState("bg-neutral");
+    const [temperature, setTemperature] = useState(0.0);
+    const [humidity, setHumidity] = useState(0.0);
 
     // turn on the valves
     const turnOn = () => {
@@ -89,11 +91,11 @@ const Dashboard = () => {
         let percentage = 0.0;
         let empty = 0;
         let full = 100;
-        let min_moisture = 100;
-        let max_moisture = 3000;
+        let min_moisture = 800;
+        let max_moisture = 2800;
 
         percentage = full - ((full - empty) * (currentMoisture - min_moisture)) / (max_moisture - min_moisture) + empty;
-        percentage = 80;
+        // percentage = 80;
         if (percentage > 100) {
             percentage = 100;
         }
@@ -118,33 +120,42 @@ const Dashboard = () => {
         let duration = 0.0;
         let drip_ltr = 40;
         let ltr = 0.0;
-        duration = (80 - moisturePercentage) / 2;
+        duration = (70 - moisturePercentage) * 3;
         if (duration < 0) {
             duration = 0;
         }
         duration = duration.toFixed(0);
         setIrrigationDuration(duration);
 
-        ltr = (duration / 60) * drip_ltr;
+        ltr = (duration * 20) / 7.5;
         ltr = ltr.toFixed(2);
         setIrrigationQuantity(ltr);
     }, [moisturePercentage]);
 
+    // trigger when to turn on and turn off based on threshold
+    useEffect(() => {
+        if (currentMoisture > 1800) {
+            turnOn();
+        } else {
+            turnOff();
+        }
+    }, [currentMoisture]);
+
 
     return (
         <>
-            <h1 class="font-bold leading-tight text-3xl mt-5 mb-2 justify-center items-center text-center">Plant Monitoring System</h1>
-            <div className="mt-8 mx-5 grid md:grid-cols-5 gap-4">
+            <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">Plant Monitoring System</h1>
+            <div className="mt-4 mx-5 grid md:grid-cols-5">
                 {/* first card */}
-                <div className="card bg-base-100 shadow-xl col-span-2">
+                <div className="card bg-base-100 shadow-xl col-span-2 m-2">
                     <div className="card-body">
-                        <h2 className="card-title justify-center">Watering system is in {wateringSystemMode} mode</h2>
+                        <h2 className="card-title justify-center items-center text-center">Watering system is in {wateringSystemMode} mode</h2>
 
                         {/* inner card for manual mode */}
                         <div className="card bg-slate-200 text-base-content">
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title">Manual Mode</h2>
-                                <div className="card-actions justify-end">
+                                <div className="card-actions justify-center items-center text-center">
                                     <button className={`btn btn-success btn-${btnState}`} onClick={turnOn}>Turn ON</button>
                                     <button className={`btn btn-error btn-${btnState}`} onClick={turnOff}>Turn OFF</button>
                                 </div>
@@ -159,9 +170,9 @@ const Dashboard = () => {
                         <div className="card bg-slate-200 text-base-content">
                             <div className="card-body items-center text-center">
                                 <h2 className="card-title">Switch between manual and automatic mode</h2>
-                                <div className="card-actions justify-end">
-                                    <button className="btn btn-lg btn-info" onClick={() => setWateringSystemMode('MANUAL')}>Manual Mode</button>
-                                    <button className="btn btn-lg btn-accent" onClick={() => setWateringSystemMode('AUTOMATIC')}>Automatic Mode</button>
+                                <div className="card-actions justify-center items-center text-center">
+                                    <button className="btn btn-info" onClick={() => setWateringSystemMode('MANUAL')}>Manual Mode</button>
+                                    <button className="btn btn-accent" onClick={() => setWateringSystemMode('AUTOMATIC')}>Automatic Mode</button>
                                 </div>
                             </div>
                         </div>
@@ -171,7 +182,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* second card */}
-                <div className="card bg-base-100 shadow-xl col-span-3">
+                <div className="card bg-base-100 shadow-xl col-span-3  m-2">
                     <div className="card-body">
                         <h1 className="card-title justify-center">Plant Information</h1>
                         <div className="divider"></div>
@@ -190,7 +201,7 @@ const Dashboard = () => {
                         <div className="grid grid-cols-3">
 
                             {/* current soil moisture level */}
-                            <div className="card bg-base-100 shadow-xl mx-2">
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
                                     <h2 className="card-title">Current Soil Moisture</h2>
                                     <div className="card-actions">
@@ -200,7 +211,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* duration */}
-                            <div className="card bg-base-100 shadow-xl mx-2">
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
                                     <h2 className="card-title">Irrigation Duration</h2>
                                     <div className="card-actions">
@@ -210,11 +221,41 @@ const Dashboard = () => {
                             </div>
 
                             {/* ltrs */}
-                            <div className="card bg-base-100 shadow-xl mx-2">
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
                                     <h2 className="card-title">Irrigation Quantity</h2>
                                     <div className="card-actions">
                                         <h3 class="font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center text-info">{irrigationQuantity} ltrs</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* current soil moisture reading */}
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
+                                <div className="card-body">
+                                    <h2 className="card-title">Current Soil Moisture Reading</h2>
+                                    <div className="card-actions">
+                                        <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>{currentMoisture} V</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* current temperature */}
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
+                                <div className="card-body">
+                                    <h2 className="card-title">Temperature</h2>
+                                    <div className="card-actions">
+                                        <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>{temperature} °C</h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* current humidity */}
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
+                                <div className="card-body">
+                                    <h2 className="card-title">Humidity</h2>
+                                    <div className="card-actions">
+                                        <h3 class={`font-bold leading-tight text-2xl mt-0 mb-2 justify-center items-center text-center`}>{humidity}</h3>
                                     </div>
                                 </div>
                             </div>
