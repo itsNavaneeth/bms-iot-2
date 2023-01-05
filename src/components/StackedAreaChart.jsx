@@ -6,11 +6,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const StackedLineChart =({data}) => {
 
       const info = data.data;
+      console.log("Stacked");
+      console.table(data);
   
     return (
        
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer  width="100%" height="100%">
         <LineChart
+        min-width="250px"
           width={500}
           height={300}
           data={info}

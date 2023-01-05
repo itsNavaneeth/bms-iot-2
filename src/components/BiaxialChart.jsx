@@ -3,7 +3,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 const BiaxialChart =({data, mode}) => {
     const info = data.data;
-  
     return (
        <ResponsiveContainer width="100%" height="100%">
         <LineChart
@@ -26,8 +25,7 @@ const BiaxialChart =({data, mode}) => {
           
           {(mode!=1&&mode!=0) && <Line yAxisId="left" type="monotone" dataKey="soilData" stroke="red" dot={false} activeDot={{ r: 8 }} />}
           {(mode!=2&&mode!=0) &&  <Line yAxisId="right" type="monotone" dataKey="rainData" stroke="green" dot={false} />}
-          {(mode!=3&&mode!=0) && <Line yAxisId="left" type="monotone" dataKey="tempData" stroke="blue" dot={false} activeDot={{ r: 8 }} />}
-          
+          {(mode!=3&&mode!=0) && <Line yAxisId="left" type="monotone" dataKey="tempData" stroke="blue" dot={false} activeDot={{ r: 8 }} />}         
           
           
         </LineChart>
