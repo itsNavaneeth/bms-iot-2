@@ -49,19 +49,43 @@ const Dashboard = () => {
   return (
     <>
       {/* second card */}
-      <div className="card bg-base-100 shadow-xl col-span-3  m-2">
+      <div className="card bg-base-100 shadow-xl m-2">
+
+
         <div className="card-body">
-          <h1 className="card-title justify-center">Plant Information</h1>
+          <h1 className="card-title justify-center">Useful graph information</h1>
           <div className="divider"></div>
-          <div class="flex ...">
-            <div class="flex-auto w-32 h-64"><StackedAreaChart data={allData} /></div>
-            <div class="flex-auto w-32 h-64"><LineChartz data={tempData} /></div>
+          <div className="grid md:grid-cols-2">
+
+            <div className="col-span-2 lg:col-span-1">
+              <div class="flex ...">
+                <div class="flex-auto w-24 h-64"><StackedAreaChart data={allData} /></div>
+              </div>
+            </div>
+
+            <div className="col-span-2 lg:col-span-1">
+              <div class="flex ...">
+                <div class="flex-auto w-24 h-64"><LineChartz data={tempData} /></div>
+              </div>
+            </div>
+
+            <div className="col-span-2 lg:col-span-1">
+              <div class="flex ...">
+                <div class="flex-auto w-24 h-64"><LineChartz data={waterData} /></div>
+              </div>
+            </div>
+
+            <div className="col-span-2 lg:col-span-1">
+              <div class="flex ...">
+                <div class="flex-auto w-24 h-64"><BiaxialChart data={allData} mode={mode} /></div>
+              </div>
+            </div>
+
+
           </div>
-          <div class="flex ...">
-            <div class="flex-auto w-32 h-64"><LineChartz data={waterData} /></div>
-            <div class="flex-auto w-32 h-64"><BiaxialChart data={allData} mode={mode} /></div>
-          </div>
-          
+
+
+
         </div>
       </div>
     </>
