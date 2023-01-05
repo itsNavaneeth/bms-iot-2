@@ -10,7 +10,7 @@ const Dashboard2 = () => {
     const [link, setLink] = useState(
         "https://api.thingspeak.com/channels/1985902/feeds.json?api_key=KKDDQDQZP8VLRQWR&"
     );
-    const [timeRange, setTimeRange] = useState(20);
+    const [timeRange, setTimeRange] = useState(90);
     const [soilData, setSoilData] = useState([]);
     const [tempData, setTempData] = useState([]);
     const [rainData, setRainData] = useState([]);
@@ -61,11 +61,23 @@ const Dashboard2 = () => {
     return (
         <>
             <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">Graph Information</h1>
-            <div className="mt-4 mx-5 grid md:grid-cols-10">
+            <div className="mt-4 mx-1 grid md:grid-cols-10">
                 {/* first card */}
-                <div className="card bg-base-100 border-2 border-black col-span-10 lg:col-span-7 m-2">
-                    <div className="card-body">
-                        <h2 className="card-title justify-center items-center text-center">Graph will come here</h2>
+                <div className="card col-span-10 lg:col-span-7 m-2">
+                    <div className="p-2">
+                        {/* <h2 className="card-title justify-center items-center text-center">Graph will come here</h2> */}
+
+                        <div class="flex ...">
+                            <div class="flex-auto w-32 h-96"><StackedAreaChart data={allData} /></div>
+                        </div>
+
+                        {/* <div class="flex ...">
+                            <div class="flex-auto w-24 h-96"><LineChartz data={tempData} /></div>
+                        </div> */}
+
+
+                        {/* <StackedAreaChart data={allData} /> */}
+
 
                     </div>
                 </div>
@@ -79,15 +91,15 @@ const Dashboard2 = () => {
 
                         <div className="form-control">
                             <label className="label cursor-pointer justify-start">
-                                <input type="checkbox" checked className="checkbox" />
+                                <input type="checkbox" unchecked className="checkbox" />
                                 <span className="label-text ml-2">Soil Moisture: </span>
                             </label>
                             <label className="label cursor-pointer justify-start">
-                                <input type="checkbox" checked className="checkbox" />
+                                <input type="checkbox" unchecked className="checkbox" />
                                 <span className="label-text ml-2">Temperature: </span>
                             </label>
                             <label className="label cursor-pointer justify-start">
-                                <input type="checkbox" checked className="checkbox" />
+                                <input type="checkbox" unchecked className="checkbox" />
                                 <span className="label-text ml-2">Rainfall: </span>
                             </label>
                         </div>

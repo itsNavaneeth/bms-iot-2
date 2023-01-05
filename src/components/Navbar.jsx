@@ -6,6 +6,7 @@ const navigation = [
     { name: 'Dashboard', href: 'dashboard', current: true },
     { name: 'GraphBoard', href: 'graphboard', current: true },
     { name: 'GraphBoard2', href: 'graphboard2', current: true },
+    // { name: 'YoutubeChart', href: 'YoutubeChart', current: true },
 ]
 
 function classNames(...classes) {

@@ -11,17 +11,16 @@ const StackedLineChart = ({ data }) => {
 
   return (
 
-    <ResponsiveContainer>
+    <ResponsiveContainer width="99%">
       <LineChart
-        min-width="250px"
         width={500}
         height={300}
         data={info}
         margin={{
-          top: 5,
+          top: 0,
           right: 0,
           left: 0,
-          bottom: 5,
+          bottom: 0,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
