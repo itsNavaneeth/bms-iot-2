@@ -71,7 +71,7 @@ const Dashboard = () => {
 
                 axios.request(options).then(function (response) {
                     // console.log(response.data);
-                    console.log(response.data.feeds[0].field3);
+                    // console.log(response.data.feeds[0].field3);
                     setCurrentMoisture(response.data.feeds[0].field3);
 
                 }).catch(function (error) {
