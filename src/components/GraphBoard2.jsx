@@ -101,7 +101,7 @@ const Dashboard2 = () => {
                                 {/* <!-- head --> */}
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>name2</th>
                                         <th>Job</th>
                                     </tr>
                                 </thead>
