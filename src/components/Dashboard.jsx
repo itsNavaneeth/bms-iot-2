@@ -71,7 +71,7 @@ const Dashboard = () => {
 
                 axios.request(options).then(function (response) {
                     // console.log(response.data);
-                    console.log(response.data.feeds[0].field3);
+                    // console.log(response.data.feeds[0].field3);
                     setCurrentMoisture(response.data.feeds[0].field3);
 
                 }).catch(function (error) {
@@ -133,17 +133,19 @@ const Dashboard = () => {
     }, [moisturePercentage]);
 
     // trigger when to turn on and turn off based on threshold
-    // useEffect(() => {
-    //     if (wateringSystemMode === 'MANUAL') {
-    //     } else if (wateringSystemMode === 'AUTOMATIC')){
-    //     if (currentMoisture > 1800) {
-    //         turnOn();
-    //     } else {
-    //         turnOff();
-    //     }
-    // }
+    useEffect(() => {
+        if (wateringSystemMode === "MANUAL") {
 
-    // }, [currentMoisture, wateringSystemMode]);
+        }
+        else {
+            if (currentMoisture > 1800) {
+                turnOn();
+            } else {
+                turnOff();
+            }
+        }
+
+    }, [currentMoisture, wateringSystemMode]);
 
     //function to call temperature and humidity
     const getTemp = () => {
