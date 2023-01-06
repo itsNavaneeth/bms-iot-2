@@ -121,10 +121,10 @@ const LiveBoard = () => {
                 <div className="card bg-base-100 border-2 border-black col-span-10 lg:col-span-3 m-2 my-auto">
                     <div className="card-body">
                         <h1 className="card-title justify-center">Live Soil Moisture in mVolts</h1>
-                        <h3 class="stat-value justify-center items-center text-center">{liveDataVal} mV</h3>
+                        <h3 class="card-title justify-center items-center text-center">{liveDataVal} mV</h3>
                         <div className="divider"></div>
                         <h1 className="card-title justify-center">Live Soil Moisture Percentage</h1>
-                        <h3 class={`stat-value justify-center items-center text-center text-${moisturePercentageColor}`}>{livePercentage} %</h3>
+                        <h3 class={`card-title justify-center items-center text-center text-${moisturePercentageColor}`}>{livePercentage} %</h3>
 
                     </div>
                     {/* <div className="card-body">
