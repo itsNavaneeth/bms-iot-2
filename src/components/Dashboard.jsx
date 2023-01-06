@@ -224,6 +224,17 @@ const Dashboard = () => {
                         <div className="grid grid-cols-3">
 
                             {/* current soil moisture level */}
+
+                            <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
+                                <div className="card-body">
+                                    <h2 className="card-title">Approx Water requirement for Tomorrow</h2>
+
+                                    <div className="card-actions">
+                                        <div class={`stat-value text-center text-${moisturePercentageColor}`}>{moisturePercentage} %</div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                                 <div className="card-body">
                                     <h2 className="card-title">Current Soil Moisture</h2>

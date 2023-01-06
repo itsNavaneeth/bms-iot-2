@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const BiaxialChart = ({ data, mode }) => {
   const info = data.data;
   return (
-    <ResponsiveContainer width="99%">
+    <ResponsiveContainer width="99%" aspect={1.5}>
       <LineChart
         data={info}
         margin={{
