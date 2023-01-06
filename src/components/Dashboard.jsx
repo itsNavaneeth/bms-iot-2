@@ -14,6 +14,8 @@ const Dashboard = () => {
     const [moisturePercentageColor, setMoisturePercentageColor] = useState("bg-neutral");
     const [temperature, setTemperature] = useState(0.0);
     const [humidity, setHumidity] = useState(0.0);
+    const [tomPrediction, setTomPrediction] = useState(0.0);
+    const [fieldValue, setFieldValue] = useState(null);
 
     // turn on the valves
     const turnOn = () => {
@@ -146,6 +148,48 @@ const Dashboard = () => {
         }
 
     }, [currentMoisture, wateringSystemMode]);
+    
+
+ 
+  
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(
+        'https://api.thingspeak.com/channels/1978647/fields/3.json?results=1'
+      );
+      const data = await response.json();
+      setFieldValue(data.feeds[0].field3);
+      let temp = fieldValue;
+      
+      
+      temp = (temp*100)/0.72;
+      
+        let percentage = 0.0;
+        let empty = 0;
+        let full = 100;
+        let min_moisture = 800;
+        let max_moisture = 2800;
+
+        percentage = full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty;
+        let duration = (70 - percentage) * 3;
+        if (duration < 0) {
+            duration = 0;
+        }
+        duration = duration.toFixed(0);
+       
+
+        let ltr = (duration * 20) / 7.5;
+        ltr = ltr.toFixed(2);
+        setTomPrediction(ltr);
+        console.log(ltr);
+    }
+    fetchData();
+  }, [fieldValue]);
+  
+console.log(tomPrediction);
+
+
 
     //function to call temperature and humidity
     const getTemp = () => {
@@ -230,7 +274,7 @@ const Dashboard = () => {
                                     <h2 className="card-title">Approx Water requirement for Tomorrow</h2>
 
                                     <div className="card-actions">
-                                        <div class={`stat-value text-center text-${moisturePercentageColor}`}>{moisturePercentage} %</div>
+                                        <div class={`stat-value text-center text-${moisturePercentageColor}`}>{tomPrediction} lts</div>
                                     </div>
                                 </div>
                             </div>
