@@ -14,8 +14,8 @@ const LiveBoard = () => {
     const [waterData, setWaterData] = useState([]);
     const [mode, setMode] = useState(4);
     const [counter, setCounter] = useState(0);
-    const [liveDataVal, setliveDataVal] = useState("(Waiting for data)");
-    const [livePercentage, setLivePercentage] = useState("(Waiting for data)");
+    const [liveDataVal, setliveDataVal] = useState("(Fetching data)");
+    const [livePercentage, setLivePercentage] = useState("(Fetching data)");
     const [moisturePercentageColor, setMoisturePercentageColor] = useState("bg-neutral");
 
 
