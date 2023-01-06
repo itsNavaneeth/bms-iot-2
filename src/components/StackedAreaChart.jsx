@@ -6,8 +6,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const StackedLineChart = ({ data }) => {
 
   const info = data.data;
-  console.log("Stacked");
-  console.table(data);
+  // console.log("Stacked");
+  // console.table(data);
 
   return (
 

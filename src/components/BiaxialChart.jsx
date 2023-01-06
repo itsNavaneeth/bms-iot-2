@@ -21,9 +21,9 @@ const BiaxialChart = ({ data, mode }) => {
         <Tooltip />
         <Legend />
 
-        {(mode != 1 && mode != 0) && <Line yAxisId="left" type="monotone" dataKey="soilData" stroke="red" dot={false} activeDot={{ r: 8 }} />}
-        {(mode != 2 && mode != 0) && <Line yAxisId="right" type="monotone" dataKey="rainData" stroke="green" dot={false} />}
-        {(mode != 3 && mode != 0) && <Line yAxisId="left" type="monotone" dataKey="tempData" stroke="blue" dot={false} activeDot={{ r: 8 }} />}
+        {(mode != 1 && mode != 0) && <Line yAxisId="left" type="monotone" dataKey="soilData" name="Soil Moisture" stroke="red" dot={false} activeDot={{ r: 8 }} />}
+        {(mode != 2 && mode != 0) && <Line yAxisId="right" type="monotone" dataKey="rainData" name="Rainfall" stroke="green" dot={false} />}
+        {(mode != 3 && mode != 0) && <Line yAxisId="left" type="monotone" dataKey="tempData" name="Temperature" stroke="blue" dot={false} activeDot={{ r: 8 }} />}
 
 
       </LineChart>

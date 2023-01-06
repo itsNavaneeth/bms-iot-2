@@ -5,25 +5,25 @@ import convData from "./convert";
 import StackedAreaChart from "./StackedAreaChart";
 import LineChartz from "./LineChart";
 
-const Dashboard = () => {
-  const [wateringSystemMode, setWateringSystemMode] = useState("AUTOMATIC");
-  const [currentMoisture, setCurrentMoisture] = useState(80.0);
-  const [moisturePercentage, setMoisturePercentage] = useState(0.0);
+const GraphBoard = () => {
   //graph section
   const [link, setLink] = useState(
     "https://api.thingspeak.com/channels/1985902/feeds.json?api_key=KKDDQDQZP8VLRQWR&"
   );
-  const [timeRange, setTimeRange] = useState(20);
+  const [timeRange, setTimeRange] = useState(90);
   const [soilData, setSoilData] = useState([]);
   const [tempData, setTempData] = useState([]);
   const [rainData, setRainData] = useState([]);
   const [allData, setAllData] = useState([]);
   const [waterData, setWaterData] = useState([]);
-  const [mode, setMode] = useState(1);
+  const [mode, setMode] = useState(0);
   const [lineData, setLineData] = useState(tempData);
+  const [soilcheckox, setSoilCheckbox] = useState(false);
+  const [tempcheckox, setTempCheckbox] = useState(false);
+  const [raincheckox, setRainCheckbox] = useState(false);
 
+  //fetches historical data from thingspeak for graphs
   useEffect(() => {
-    //fetches historical data from thingspeak for graphs
     fetch(link + "results=" + timeRange)
       .then((response) => response.json())
       .then((info) => {
@@ -35,9 +35,9 @@ const Dashboard = () => {
       });
   }, [timeRange]);
 
+  //Fetch the machine learning model ressults from thingspeak
   useEffect(() => {
-    console.log("refreshed");
-    //Fetch the machine learning model ressults from thingspeak
+    // console.log("refreshed");
     fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
       .then((response) => response.json())
       .then((info) => {
@@ -45,11 +45,8 @@ const Dashboard = () => {
         setWaterData(data);
       });
 
-
-
-
     const interval = setInterval(() => {
-      console.log("refreshed");
+    //   console.log("refreshed");
       //Fetch the machine learning model ressults from thingspeak
       fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
         .then((response) => response.json())
@@ -57,57 +54,176 @@ const Dashboard = () => {
           const data = convData(info, -1);
           setWaterData(data);
         });
-
     }, 15000);
 
     return () => clearInterval(interval);
-
   }, [waterData]);
+
+  //choose which graph to display
+  useEffect(() => {
+   console.log(soilcheckox+" "+raincheckox+""+tempcheckox);
+   if(!soilcheckox&&!raincheckox&&!tempcheckox)
+   {
+    setMode(0);
+    console.log("Data not selected");
+   }
+   else
+   if(soilcheckox&&!raincheckox&&!tempcheckox)
+   {
+    setMode(4);
+    setLineData(soilData);
+   }
+   else
+   if(!soilcheckox&&raincheckox&&!tempcheckox)
+   {
+    setMode(4);
+    setLineData(rainData);
+   }
+   else
+   if(!soilcheckox&&!raincheckox&&tempcheckox)
+   {
+    setMode(4);
+    setLineData(tempData);
+   }
+   else
+   if(!soilcheckox&& raincheckox&&tempcheckox)
+   {
+    setMode(1);
+    setLineData(allData);
+   }
+   else 
+   if(soilcheckox&& !raincheckox && tempcheckox)
+   {
+    setMode(2);
+    setLineData(allData);
+   }
+   else
+   if(soilcheckox&& raincheckox && !tempcheckox)
+   {
+    setMode(3);
+    setLineData(allData);
+   }
+   else
+   if(soilcheckox&& raincheckox && tempcheckox)
+   {
+    setMode(5);
+    setLineData(allData);
+   }
+   
+  }, [soilcheckox,raincheckox,tempcheckox]);
+
+  useEffect(()=>
+    {
+        console.log("mode"+mode)
+
+    },[mode]
+  );
+ 
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    console.log(name+" "+checked);
+    if(name == "SoilMoisture")
+    {
+        setSoilCheckbox(!soilcheckox);
+    }
+    else if(name == "Temperature")
+    {
+        setTempCheckbox(!tempcheckox);
+    }
+    else if(name == "Rainfall")
+    {
+        setRainCheckbox(!raincheckox);
+    }
+   
+    
+  }
 
   return (
     <>
-      {/* second card */}
-      <div className="card bg-base-100 shadow-xl m-2">
+      <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">
+        Graph Information
+      </h1>
+      <div className="mt-4 mx-1 grid md:grid-cols-10">
+        {/* first card */}
+        <div className="card col-span-10 lg:col-span-7 m-2">
+          <div className="p-2">
+            {/* <h2 className="card-title justify-center items-center text-center">Graph will come here</h2> */}
 
-
-        <div className="card-body">
-          <h1 className="card-title justify-center">Useful graph information</h1>
-          <div className="divider"></div>
-          <div className="grid md:grid-cols-2">
-
-            <div className="col-span-2 lg:col-span-1">
-              <div class="flex ...">
-                <div class="flex-auto w-24 h-64"><StackedAreaChart data={allData} /></div>
+            <div class="flex ...">
+              <div class="flex-auto w-32 h-96">
+               {(mode==5 && <StackedAreaChart data={allData} />)} 
+               {(mode==4 && <LineChartz data={lineData} />)}
+               {(mode==1||mode==2||mode==3) && <BiaxialChart data={lineData} mode={mode} />} 
               </div>
             </div>
 
-            <div className="col-span-2 lg:col-span-1">
-              <div class="flex ...">
-                <div class="flex-auto w-24 h-64"><LineChartz data={tempData} /></div>
-              </div>
-            </div>
+            {/* <div class="flex ...">
+                            <div class="flex-auto w-24 h-96"><LineChartz data={tempData} /></div>
+                        </div> */}
 
-            <div className="col-span-2 lg:col-span-1">
-              <div class="flex ...">
-                <div class="flex-auto w-24 h-64"><LineChartz data={waterData} /></div>
-              </div>
-            </div>
-
-            <div className="col-span-2 lg:col-span-1">
-              <div class="flex ...">
-                <div class="flex-auto w-24 h-64"><BiaxialChart data={allData} mode={mode} /></div>
-              </div>
-            </div>
-
-
+            {/* <StackedAreaChart data={allData} /> */}
           </div>
+        </div>
 
+        {/* second card */}
+        <div className="card bg-base-100 border-2 border-black col-span-10 lg:col-span-3 m-2">
+          <div className="card-body">
+            <h1 className="card-title justify-center">Graph Information</h1>
 
+            <div className="divider"></div>
+                            
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start">
+                <input type="checkbox" name ="SoilMoisture" onChange={handleCheckboxChange} unchecked className="checkbox" />
+                <span className="label-text ml-2">Soil Moisture: </span>
+              </label>
+              <label className="label cursor-pointer justify-start">
+                <input type="checkbox" name ="Temperature" onChange={handleCheckboxChange} unchecked className="checkbox" />
+                <span className="label-text ml-2">Temperature: </span>
+              </label>
+              <label className="label cursor-pointer justify-start">
+                <input type="checkbox" name ="Rainfall" onChange={handleCheckboxChange} unchecked className="checkbox" />
+                <span className="label-text ml-2">Rainfall: </span>
+              </label>
+            </div>
 
+            <div className="divider"></div>
+
+            {/* table */}
+            {/* <div className="overflow-x-auto">
+              <table className="table w-full">
+                <!-- head -->
+                <thead>
+                  <tr>
+                    <th>name2</th>
+                    <th>Job</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- row 1 -->
+                  <tr>
+                    <td>Cy Ganderton</td>
+                    <td>idk</td>
+                  </tr>
+                  <!-- row 2 -->
+                  <tr>
+                    <td>Hart Hagerty</td>
+                    <td>idk</td>
+                  </tr>
+                  <!-- row 3 -->
+                  <tr>
+                    <td>Brice Swyre</td>
+                    <td>idk</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div> */}
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default Dashboard;
+export default GraphBoard;

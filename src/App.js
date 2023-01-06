@@ -5,7 +5,7 @@ import ToggleButtons from './components/ToggleButtons';
 import Dashboard from './components/Dashboard';
 import { Routes, Route } from 'react-router-dom';
 import GraphBoard from "./components/GraphBoard";
-import GraphBoard2 from "./components/GraphBoard2";
+// import GraphBoard2 from "./components/GraphBoard2";
 import YoutubeChart from './components/YoutubeChart';
 
 
@@ -18,7 +18,7 @@ function App() {
 
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="graphboard" element={<GraphBoard />} />
-          <Route path="graphboard2" element={<GraphBoard2 />} />
+          {/* <Route path="graphboard2" element={<GraphBoard2 />} /> */}
           <Route path="youtubechart" element={<YoutubeChart />} />
           <Route path="/" element={<Dashboard />}>
             {/* Using path="*"" means "match anything", so this route
