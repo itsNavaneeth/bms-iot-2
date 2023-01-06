@@ -87,7 +87,7 @@ const GraphBoard = () => {
       setMode(5);
       setLineData(allData);
     }
-  }, [soilcheckox, raincheckox, tempcheckox,allData]);
+  }, [soilcheckox, raincheckox, tempcheckox, allData]);
 
 
   const handleCheckboxChange = (event) => {
@@ -106,7 +106,7 @@ const GraphBoard = () => {
   useEffect(() => {
     //fetches historical data from thingspeak for graphs
     console.log(timeRange);
-    fetch(link +"results="+ timeRange)
+    fetch(link + "results=" + timeRange)
       .then((response) => response.json())
       .then((info) => {
         const data = convData(info);
@@ -119,7 +119,7 @@ const GraphBoard = () => {
 
   const handleTimeRangeChange = (event) => {
     let value = event.target.value;
-   setTimeRange(value);
+    setTimeRange(value);
 
   };
 
@@ -139,7 +139,7 @@ const GraphBoard = () => {
       <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">
         Graph Information
       </h1>
-      <p className="mt-5 mx-3 justify-center items-center text-center">
+      <p className="justify-center items-center text-center">
         Select the data to see its graph
       </p>
       <div className="mt-4 mx-1 grid md:grid-cols-10">

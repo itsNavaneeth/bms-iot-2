@@ -7,6 +7,7 @@ import { Routes, Route } from 'react-router-dom';
 import GraphBoard from "./components/GraphBoard";
 // import GraphBoard2 from "./components/GraphBoard2";
 import YoutubeChart from './components/YoutubeChart';
+import LiveBoard from './components/LiveBoard';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
 
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="graphboard" element={<GraphBoard />} />
+          <Route path="liveboard" element={<LiveBoard />} />
           {/* <Route path="graphboard2" element={<GraphBoard2 />} /> */}
           <Route path="youtubechart" element={<YoutubeChart />} />
           <Route path="/" element={<Dashboard />}>
