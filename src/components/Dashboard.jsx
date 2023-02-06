@@ -16,7 +16,7 @@ const Dashboard = () => {
   const [humidity, setHumidity] = useState(0.0);
   const [tomPrediction, setTomPrediction] = useState(0.0);
   const [fieldValue, setFieldValue] = useState(null);
-  const [sensorData, setSensorData] = useState();
+  const [sensorData, setSensorData] = useState(null);
 
   // turn on the valves
   const turnOn = () => {
@@ -147,27 +147,22 @@ const Dashboard = () => {
 
 
 
- // Call for channel data
- useEffect(() => {
+//  // Call for channel data
+//  useEffect(() => {
 
-    fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=1")
-    .then((response) => response.json())
-    .then((info) => {
+//     fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=1")
+//     .then((response) => response.json())
+//     .then((info) => {
 
-      console.log("info fields");
-      console.table(info.feeds[0]);
-      const data = [];
-      data[0] = info.feeds[0].field1;
-      data[1] = info.feeds[0].field2;
-      data[2] = info.feeds[0].field3;
-      data[3] = info.feeds[0].field4;
-      setSensorData(data);  
-      console.log("sensor fields");    
-      console.table(sensorData);     
+//       console.log("info fields");
+//       console.table(info.feeds[0]);
+//       setSensorData(info.feeds[0]);  
+//       console.log("sensor fields");    
+//       console.log(sensorData);      
 
-    });
+//     });
 
-  }, []);
+//   }, []);
 
 
 
@@ -345,7 +340,7 @@ const Dashboard = () => {
                           <div
                             class={`stat-value text-center text-${moisturePercentageColor}`}
                           >
-                            {(sensorData[0]+sensorData[1]+sensorData[2])/3.0} %
+                            {moisturePercentage} %
                           </div>
                         </div>
                       </div>
@@ -358,7 +353,7 @@ const Dashboard = () => {
                           <div
                             class={`stat-value text-center text-${moisturePercentageColor}`}
                           >
-                            {sensorData[0]} %
+                            {sensorData} %
                           </div>
                         </div>
                       </div>
@@ -371,7 +366,7 @@ const Dashboard = () => {
                           <div
                             class={`stat-value text-center text-${moisturePercentageColor}`}
                           >
-                            {sensorData[1]} %
+                            {moisturePercentage} %
                           </div>
                         </div>
                       </div>
@@ -384,7 +379,7 @@ const Dashboard = () => {
                           <div
                             class={`stat-value text-center text-${moisturePercentageColor}`}
                           >
-                            {sensorData[2]} %
+                            {moisturePercentage} %
                           </div>
                         </div>
                       </div>
