@@ -244,7 +244,7 @@ const Dashboard = () => {
   return (
     <>
       <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">
-        Plant Monitoring System
+        Smart Irrigation System
       </h1>
       <div className="mt-4 mx-5 grid md:grid-cols-5">
         {/* first card */}
