@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [fieldValue, setFieldValue] = useState(null);
   const [sensorData, setSensorData] = useState(null);
 
+  // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
   // turn on the valves
   const turnOn = () => {
     const options = {
@@ -33,7 +34,6 @@ const Dashboard = () => {
     axios
       .request(options)
       .then(function (response) {
-        
         setWateringStatus("ON");
         setTextState("text-success");
       })
@@ -54,11 +54,9 @@ const Dashboard = () => {
       data: { value: 1 },
     };
 
-    
     axios
       .request(options)
       .then(function (response) {
-        
         setWateringStatus("OFF");
         setTextState("text-error");
       })
@@ -81,7 +79,6 @@ const Dashboard = () => {
         axios
           .request(options)
           .then(function (response) {
-          
             setCurrentMoisture(response.data.feeds[0].field3);
           })
           .catch(function (error) {
@@ -95,6 +92,7 @@ const Dashboard = () => {
     }
   }, [wateringSystemMode]);
 
+  // ---------------------------------------------------------------------Data Display---------------------------------------------------------------------------------------
   // converting moisture to percentage
   useEffect(() => {
     let percentage = 0.0;
@@ -144,27 +142,18 @@ const Dashboard = () => {
     setIrrigationQuantity(ltr);
   }, [moisturePercentage]);
 
-
-
-
-//  // Call for channel data
-//  useEffect(() => {
-
-//     fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=1")
-//     .then((response) => response.json())
-//     .then((info) => {
-
-//       console.log("info fields");
-//       console.table(info.feeds[0]);
-//       setSensorData(info.feeds[0]);  
-//       console.log("sensor fields");    
-//       console.log(sensorData);      
-
-//     });
-
-//   }, []);
-
-
+  // Call for channel data
+  useEffect(() => {
+    fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=1")
+      .then((response) => response.json())
+      .then((data) => {
+        const array = Object.values(data);
+        console.log(array);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   // trigger when to turn on and turn off based on threshold
   useEffect(() => {
@@ -209,12 +198,9 @@ const Dashboard = () => {
       let ltr = (duration * 20) / 7.5;
       ltr = ltr.toFixed(2);
       setTomPrediction(ltr);
-      
     }
     fetchData();
   }, [fieldValue]);
-
-  
 
   //function to call temperature and humidity
   const getTemp = () => {
@@ -234,7 +220,6 @@ const Dashboard = () => {
         let temp = response.data.main.temp - 273.15;
         temp = temp.toFixed(2);
         setTemperature(temp);
-        
       })
       .catch(function (error) {
         console.error(error);
@@ -243,13 +228,31 @@ const Dashboard = () => {
 
   return (
     <>
-      <h1 class="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">
+      <h1 className="font-bold text-3xl mt-5 mx-3 justify-center items-center text-center">
         Smart Irrigation System
       </h1>
+      <h2 className="text-base mx-3 justify-center items-center text-center">
+        Control your system and view all the important details here
+      </h2>
       <div className="mt-4 mx-5 grid md:grid-cols-5">
-        {/* first card */}
+        {/*------------------------------------------------------------------------- first half -------------------------------------------------------------------------- */}
         <div className="card bg-base-100 shadow-xl col-span-2 m-2">
           <div className="card-body">
+            {/* progress or lifecycle */}
+            <h1 className="card-title mt-5 mx-3 justify-center items-center text-center">
+              X more days till harvest
+            </h1>
+
+            <div className="flex justify-center ">
+              <ul className="steps steps-vertical lg:steps-horizontal">
+                <li className="step step-success">Seedling</li>
+                <li className="step step-success">Vegetative</li>
+                <li className="step">Flowering</li>
+                <li className="step">Fruit development</li>
+                <li className="step">Harvest</li>
+              </ul>
+            </div>
+            <div className="divider" />
             <h2 className="card-title justify-center items-center text-center">
               Watering system is in {wateringSystemMode} mode
             </h2>
@@ -306,90 +309,165 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+            <div className="divider" />
           </div>
         </div>
 
-        {/* second card */}
-        <div className="card bg-base-100 shadow-xl col-span-3 m-2">
-          <div className="card-body">
-            <h1 className="card-title justify-center">Plant Information</h1>
-            <div className="divider"></div>
+        {/*------------------------------------------------------------------------- Second half -------------------------------------------------------------------------- */}
 
-            {/* progress or lifecycle */}
-            <ul className="steps steps-vertical lg:steps-horizontal">
-              <li className="step step-success">Seedling</li>
-              <li className="step step-success">Vegetative</li>
-              <li className="step">Flowering</li>
-              <li className="step">Fruit development</li>
-              <li className="step">Harvest</li>
-            </ul>
+        <div className="card bg-base-100 col-span-3 m-2 ">
+          <div className="grid grid-cols-3">
+            {/* current soil moisture */}
+            <div className="card bg-base-100 my-1 shadow-xl lg:col-span-3 col-span-3">
+              <div className="card-body">
+                <h2 className="card-title">Soil Moisture</h2>
 
-            <div className="divider"></div>
-            <div className="grid grid-cols-3">
-              {/* current soil moisture */}
-              <div className="card bg-base-100 shadow-xl m-1 lg:col-span-3 col-span-3">
-                <div className="card-body">
-                  <h2 className="card-title">Soil Moisture</h2>
-                  
-                  
-                  <div className="card-actions grid grid-cols-3">
-                    <div className="card bg-base-100 shadow-xl m-1 col-span-3 ">
-                      <div className="card-body">
-                        <h2 className="card-title">Average Soil Moisture</h2>
-                        <div className="card-actions">
-                          <div
-                            class={`stat-value text-center text-${moisturePercentageColor}`}
-                          >
-                            {moisturePercentage} %
-                          </div>
+                <div className="card-actions grid grid-cols-3">
+                  <div className="card bg-base-100 shadow-md  col-span-3 ">
+                    <div className="card-body">
+                      <h2 className="card-title">Average Soil Moisture</h2>
+                      <div className="card-actions">
+                        <div
+                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                        >
+                          {moisturePercentage} %
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="card bg-base-100 shadow-xl m-1 lg:col-span-1 col-span-3">
-                      <div className="card-body">
-                        <h2 className="card-title">Sensor 1</h2>
-                        <div className="card-actions">
-                          <div
-                            class={`stat-value text-center text-${moisturePercentageColor}`}
-                          >
-                            {sensorData} %
-                          </div>
+                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">Sensor 1</h2>
+                      <div className="card-actions">
+                        <div
+                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                        >
+                          {sensorData} %
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="card bg-base-100 shadow-xl m-1 lg:col-span-1 col-span-3">
-                      <div className="card-body">
-                        <h2 className="card-title">Sensor 2</h2>
-                        <div className="card-actions">
-                          <div
-                            class={`stat-value text-center text-${moisturePercentageColor}`}
-                          >
-                            {moisturePercentage} %
-                          </div>
+                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">Sensor 2</h2>
+                      <div className="card-actions">
+                        <div
+                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                        >
+                          {moisturePercentage} %
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="card bg-base-100 shadow-xl m-1 lg:col-span-1 col-span-3">
-                      <div className="card-body">
-                        <h2 className="card-title">Sensor 3</h2>
-                        <div className="card-actions">
-                          <div
-                            class={`stat-value text-center text-${moisturePercentageColor}`}
-                          >
-                            {moisturePercentage} %
-                          </div>
+                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">Sensor 3</h2>
+                      <div className="card-actions">
+                        <div
+                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                        >
+                          {moisturePercentage} %
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* current soil moisture level */}
+            <div className="card bg-base-100 my-1 shadow-xl  lg:col-span-3 col-span-3">
+              <div className="card-body">
+                <h2 className="card-title">Water Consumption</h2>
+
+                <div className="card-actions grid grid-cols-3 items-stretch">
+                  {/* current soil moisture level */}
+                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">
+                        Estimated water requirement
+                      </h2>
+
+                      <div className="card-actions">
+                        <div
+                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                        >
+                          {tomPrediction} lts
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* duration */}
+                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">Irrigation Duration</h2>
+                      <div className="card-actions">
+                        <div class="text-3xl font-extrabold text-warning">
+                          {irrigationDuration} mins
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ltrs */}
+                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                    <div className="card-body">
+                      <h2 className="card-title">Irrigation Quantity</h2>
+                      <div className="card-actions">
+                        <h3 class="text-3xl font-extrabold text-info">
+                          {irrigationQuantity} ltrs
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-base-100 my-1 shadow-xl  lg:col-span-3 col-span-3">
+              <div className="card-body  grid grid-cols-3">
+                <h2 className="card-title  lg:col-span-3 col-span-3">
+                  Environment
+                </h2>
+
+                {/* current temperature */}
+                <div className="card bg-base-100 shadow-md m-2  lg:col-span-1 col-span-3">
+                  <div className="card-body">
+                    <h2 className="card-title" onClick={getTemp}>
+                      Temperature
+                    </h2>
+                    <div className="card-actions">
+                      <h3 class="text-3xl font-extrabold">{temperature} °C</h3>
+                    </div>
+                  </div>
+                </div>
+
+                {/* current Rainfall */}
+                <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                  <div className="card-body">
+                    <h2 className="card-title">Rainfall</h2>
+                    <div className="card-actions">
+                      <h3 class="text-3xl font-extrabold ">0 %</h3>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current Humidity */}
+                <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                  <div className="card-body">
+                    <h2 className="card-title">Humidity</h2>
+                    <div className="card-actions">
+                      <h3 class="text-3xl font-extrabold ">0 %</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* current soil moisture level
               <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                 <div className="card-body">
                   <h2 className="card-title">
@@ -398,62 +476,59 @@ const Dashboard = () => {
 
                   <div className="card-actions">
                     <div
-                      class={`stat-value text-center text-${moisturePercentageColor}`}
+                      class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                     >
                       {tomPrediction} lts
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              {/* duration */}
+            {/* duration
               <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                 <div className="card-body">
                   <h2 className="card-title">Irrigation Duration</h2>
                   <div className="card-actions">
-                    <div class="stat-value text-warning">
+                    <div class="text-3xl font-extrabold text-warning">
                       {irrigationDuration} mins
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              {/* ltrs */}
+            {/* ltrs
               <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                 <div className="card-body">
                   <h2 className="card-title">Irrigation Quantity</h2>
                   <div className="card-actions">
-                    <h3 class="stat-value text-info">
+                    <h3 class="text-3xl font-extrabold text-info">
                       {irrigationQuantity} ltrs
                     </h3>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-            {/* current temperature */}
+            {/* current temperature
               <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                 <div className="card-body">
                   <h2 className="card-title" onClick={getTemp}>
                     Temperature
                   </h2>
                   <div className="card-actions">
-                    <h3 class="stat-value">{temperature} °C</h3>
+                    <h3 class="text-3xl font-extrabold">{temperature} °C</h3>
                   </div>
                 </div>
               </div>
 
-              {/* current humidity */}
+              current humidity
               <div className="card bg-base-100 shadow-xl m-2 lg:col-span-1 col-span-3">
                 <div className="card-body">
                   <h2 className="card-title">Rainfall</h2>
                   <div className="card-actions">
-                    <h3 class="stat-value ">0 %</h3>
+                    <h3 class="text-3xl font-extrabold ">0 %</h3>
                   </div>
                 </div>
-              </div>
-
-
-            </div>
+              </div> */}
           </div>
         </div>
       </div>
