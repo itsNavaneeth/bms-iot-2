@@ -36,7 +36,7 @@ const GraphBoard = () => {
       });
   }, [timeRange]);
 
-  //Fetch the machine learning model ressults from thingspeak
+  //Fetch the machine learning model results from thingspeak
   useEffect(() => {
     // console.log("refreshed");
     fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
@@ -89,7 +89,6 @@ const GraphBoard = () => {
     }
   }, [soilcheckox, raincheckox, tempcheckox, allData]);
 
-
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
     console.log(name + " " + checked);
@@ -120,19 +119,7 @@ const GraphBoard = () => {
   const handleTimeRangeChange = (event) => {
     let value = event.target.value;
     setTimeRange(value);
-
   };
-
-  // useEffect(() => {
-  //   console.log("refreshed");
-  //   //Fetch the machine learning model ressults from thingspeak
-  //   fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
-  //     .then((response) => response.json())
-  //     .then((info) => {
-  //       const data = convData(info, -1);
-  //       setWaterData(data);
-  //     });
-  // }, [refresh]);
 
   return (
     <>
@@ -146,8 +133,6 @@ const GraphBoard = () => {
         {/* first card */}
         <div className="card col-span-10 lg:col-span-7 m-2">
           <div className="p-2">
-            {/* <h2 className="card-title justify-center items-center text-center">Graph will come here</h2> */}
-
             <div class="flex ...">
               <div class="flex-auto w-32 h-96">
                 {mode == 5 && <StackedAreaChart data={allData} />}
@@ -208,49 +193,23 @@ const GraphBoard = () => {
 
             <div className="divider"></div>
 
-            <select value={value} onChange={handleTimeRangeChange} className="select select-bordered w-full max-w-xs">
+            <select
+              value={value}
+              onChange={handleTimeRangeChange}
+              className="select select-bordered w-full max-w-xs"
+            >
               <option disabled selected>
                 Select a time range
               </option>
               <option value="7">Last Week</option>
-              <option selected value="30">Last Month</option>
+              <option selected value="30">
+                Last Month
+              </option>
               <option value="90">Last 3 Months</option>
               <option value="180">Last 6 Months</option>
               <option value="365">Last Year</option>
               {/* <option>Custom Time Range</option> */}
             </select>
-
-
-
-            {/* table */}
-            {/* <div className="overflow-x-auto">
-              <table className="table w-full">
-                <!-- head -->
-                <thead>
-                  <tr>
-                    <th>name2</th>
-                    <th>Job</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- row 1 -->
-                  <tr>
-                    <td>Cy Ganderton</td>
-                    <td>idk</td>
-                  </tr>
-                  <!-- row 2 -->
-                  <tr>
-                    <td>Hart Hagerty</td>
-                    <td>idk</td>
-                  </tr>
-                  <!-- row 3 -->
-                  <tr>
-                    <td>Brice Swyre</td>
-                    <td>idk</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> */}
           </div>
         </div>
       </div>

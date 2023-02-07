@@ -2,23 +2,29 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const Dashboard = () => {
-  const [wateringSystemMode, setWateringSystemMode] = useState("AUTOMATIC");
-  const [wateringStatus, setWateringStatus] = useState("OFF");
-  const [currentMoisture, setCurrentMoisture] = useState(80.0);
-  const [moisturePercentage, setMoisturePercentage] = useState(0.0);
-  const [btnState, setBtnState] = useState("");
-  const [textState, setTextState] = useState("text-error");
-  const [irrigationDuration, setIrrigationDuration] = useState(0.0);
-  const [irrigationQuantity, setIrrigationQuantity] = useState(0.0);
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< State Change Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   const [moisturePercentageColor, setMoisturePercentageColor] =
     useState("bg-neutral");
+  const [btnState, setBtnState] = useState("");
+  const [textState, setTextState] = useState("text-error");
+  const [wateringSystemMode, setWateringSystemMode] = useState("AUTOMATIC");
+  const [wateringStatus, setWateringStatus] = useState("OFF");
+  const [soilDetails, setSoilDetails] = useState(false);
+  const [waterDetails, setWaterDetails] = useState(false);
+
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Data Display Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  const [currentMoisture, setCurrentMoisture] = useState(80.0);
   const [temperature, setTemperature] = useState(0.0);
   const [humidity, setHumidity] = useState(0.0);
-  const [tomPrediction, setTomPrediction] = useState(0.0);
-  const [fieldValue, setFieldValue] = useState(null);
   const [sensorData, setSensorData] = useState(null);
+  const [fieldValue, setFieldValue] = useState(null);
+  const [irrigationDuration, setIrrigationDuration] = useState(0.0);
+  const [irrigationQuantity, setIrrigationQuantity] = useState(0.0);
+  const [moisturePercentage, setMoisturePercentage] = useState(0.0);
+  const [tomPrediction, setTomPrediction] = useState(0.0);
 
   // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
+
   // turn on the valves
   const turnOn = () => {
     const options = {
@@ -92,7 +98,8 @@ const Dashboard = () => {
     }
   }, [wateringSystemMode]);
 
-  // ---------------------------------------------------------------------Data Display---------------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------Field Data Display---------------------------------------------------------------------------------------
+
   // converting moisture to percentage
   useEffect(() => {
     let percentage = 0.0;
@@ -324,7 +331,10 @@ const Dashboard = () => {
 
                 <div className="card-actions grid grid-cols-3">
                   <div className="card bg-base-100 shadow-md  col-span-3 ">
-                    <div className="card-body">
+                    <div
+                      className="card-body hover:bg-base-200"
+                      onClick={() => setSoilDetails(!soilDetails)}
+                    >
                       <h2 className="card-title">Average Soil Moisture</h2>
                       <div className="card-actions">
                         <div
@@ -335,45 +345,48 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
-                    <div className="card-body">
-                      <h2 className="card-title">Sensor 1</h2>
-                      <div className="card-actions">
-                        <div
-                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
-                        >
-                          {sensorData} %
+                  {soilDetails && (
+                    <>
+                      <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Sensor 1</h2>
+                          <div className="card-actions">
+                            <div
+                              class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                            >
+                              {sensorData} %
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
-                    <div className="card-body">
-                      <h2 className="card-title">Sensor 2</h2>
-                      <div className="card-actions">
-                        <div
-                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
-                        >
-                          {moisturePercentage} %
+                      <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Sensor 2</h2>
+                          <div className="card-actions">
+                            <div
+                              class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                            >
+                              {moisturePercentage} %
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
-                    <div className="card-body">
-                      <h2 className="card-title">Sensor 3</h2>
-                      <div className="card-actions">
-                        <div
-                          class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
-                        >
-                          {moisturePercentage} %
+                      <div className="card bg-base-100 shadow-md  lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Sensor 3</h2>
+                          <div className="card-actions">
+                            <div
+                              class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
+                            >
+                              {moisturePercentage} %
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -384,10 +397,13 @@ const Dashboard = () => {
 
                 <div className="card-actions grid grid-cols-3 items-stretch">
                   {/* current soil moisture level */}
-                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
-                    <div className="card-body">
+                  <div className="card bg-base-100 m-2 shadow-md  col-span-3 ">
+                    <div
+                      className="card-body hover:bg-base-200"
+                      onClick={() => setWaterDetails(!waterDetails)}
+                    >
                       <h2 className="card-title">
-                        Estimated water requirement
+                        Estimated water requirement for the next day
                       </h2>
 
                       <div className="card-actions">
@@ -399,30 +415,46 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* duration */}
-                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
-                    <div className="card-body">
-                      <h2 className="card-title">Irrigation Duration</h2>
-                      <div className="card-actions">
-                        <div class="text-3xl font-extrabold text-warning">
-                          {irrigationDuration} mins
+                  {waterDetails && (
+                    <>
+                      {/* duration */}
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Irrigation Duration</h2>
+                          <div className="card-actions">
+                            <div class="text-3xl font-extrabold text-warning">
+                              {irrigationDuration} mins
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* ltrs */}
-                  <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
-                    <div className="card-body">
-                      <h2 className="card-title">Irrigation Quantity</h2>
-                      <div className="card-actions">
-                        <h3 class="text-3xl font-extrabold text-info">
-                          {irrigationQuantity} ltrs
-                        </h3>
+                      {/* ltrs */}
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Irrigation Quantity</h2>
+                          <div className="card-actions">
+                            <h3 class="text-3xl font-extrabold text-info">
+                              {irrigationQuantity} ltrs
+                            </h3>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+
+
+                        {/* flow meter */}
+                        <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                        <div className="card-body">
+                          <h2 className="card-title">Flow meter</h2>
+                          <div className="card-actions">
+                            <h3 class="text-3xl font-extrabold text-info">
+                              {irrigationQuantity} ltrs
+                            </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
