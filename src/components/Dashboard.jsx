@@ -16,12 +16,20 @@ const Dashboard = () => {
   const [currentMoisture, setCurrentMoisture] = useState(80.0);
   const [temperature, setTemperature] = useState(0.0);
   const [humidity, setHumidity] = useState(0.0);
-  const [sensorData, setSensorData] = useState(null);
+  const [rainfall, setRainfall] = useState(0.0);
   const [fieldValue, setFieldValue] = useState(null);
   const [irrigationDuration, setIrrigationDuration] = useState(0.0);
   const [irrigationQuantity, setIrrigationQuantity] = useState(0.0);
   const [moisturePercentage, setMoisturePercentage] = useState(0.0);
   const [tomPrediction, setTomPrediction] = useState(0.0);
+  const [sensor1Data, setSensor1Data] = useState(0.0);
+  const [sensor2Data, setSensor2Data] = useState(0.0);
+  const [sensor3Data, setSensor3Data] = useState(0.0);
+  const [flowData, setFlowData] = useState(0);
+  const [totalWaterUsed, setTotalWaterUsed] = useState(0);
+  const [realTimeFlowRate, setRealTimeFlowRate] = useState(0);
+  const [valvePosition, setValvePosition] = useState("off");
+  const [averagePercentage, setAveragePercentage] = useState(0);
 
   // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
 
@@ -73,8 +81,10 @@ const Dashboard = () => {
 
   // toggle between manual and automatic mode
   useEffect(() => {
+    let temp;
     if (wateringSystemMode === "AUTOMATIC") {
       setBtnState("disabled");
+
       const interval = setInterval(() => {
         const options = {
           method: "GET",
@@ -90,13 +100,72 @@ const Dashboard = () => {
           .catch(function (error) {
             console.error(error);
           });
-      }, 1000);
+
+        fetch(
+          "https://api.thingspeak.com/channels/2028980/feeds.json?results=2"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            temp = convertToMoisture(data.feeds[0].field1);
+            
+            setSensor1Data(temp);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
+        fetch(
+          "https://api.thingspeak.com/channels/2028981/feeds.json?results=2"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            temp = convertToMoisture(data.feeds[0].field1);
+            setSensor2Data(temp);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
+        fetch(
+          "https://api.thingspeak.com/channels/2028982/feeds.json?results=2"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            temp = convertToMoisture(data.feeds[0].field1);
+            setSensor3Data(temp);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
+        fetch(
+          "https://api.thingspeak.com/channels/2028983/feeds.json?api_key=E0TVAT7SEAK0ALI9&results=2"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            // setSensor3Data(data.feeds[0].field1);
+            setRealTimeFlowRate(data.feeds[0].field3);
+            console.table(data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
+          
+
+
+      }, 2000);
 
       return () => clearInterval(interval);
     } else {
       setBtnState("");
     }
   }, [wateringSystemMode]);
+
+
+  useEffect(() => {
+    setAveragePercentage((sensor1Data+sensor2Data+sensor3Data)/3);
+  }, [sensor1Data,sensor2Data,sensor3Data]);
 
   // ---------------------------------------------------------------------Field Data Display---------------------------------------------------------------------------------------
 
@@ -108,11 +177,7 @@ const Dashboard = () => {
     let min_moisture = 800;
     let max_moisture = 2800;
 
-    percentage =
-      full -
-      ((full - empty) * (currentMoisture - min_moisture)) /
-        (max_moisture - min_moisture) +
-      empty;
+    percentage =   full - ((full - empty) * (currentMoisture - min_moisture)) /   (max_moisture - min_moisture) +    empty;
     // percentage = 80;
     if (percentage > 100) {
       percentage = 100;
@@ -132,7 +197,7 @@ const Dashboard = () => {
     }
   }, [currentMoisture]);
 
-  // calculate irrigation duration and irrigation quantity
+  //calculate irrigation duration and irrigation quantity
   useEffect(() => {
     let duration = 0.0;
     let drip_ltr = 40;
@@ -148,19 +213,6 @@ const Dashboard = () => {
     ltr = ltr.toFixed(2);
     setIrrigationQuantity(ltr);
   }, [moisturePercentage]);
-
-  // Call for channel data
-  useEffect(() => {
-    fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=1")
-      .then((response) => response.json())
-      .then((data) => {
-        const array = Object.values(data);
-        console.log(array);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
   // trigger when to turn on and turn off based on threshold
   useEffect(() => {
@@ -181,10 +233,8 @@ const Dashboard = () => {
       );
       const data = await response.json();
       setFieldValue(data.feeds[0].field3);
-      let temp = fieldValue;
 
-      temp = (temp * 100) / 0.72;
-
+      let temp = (fieldValue * 100) / 0.72;
       let percentage = 0.0;
       let empty = 0;
       let full = 100;
@@ -196,12 +246,12 @@ const Dashboard = () => {
         ((full - empty) * (temp - min_moisture)) /
           (max_moisture - min_moisture) +
         empty;
+
       let duration = (70 - percentage) * 3;
       if (duration < 0) {
         duration = 0;
       }
       duration = duration.toFixed(0);
-
       let ltr = (duration * 20) / 7.5;
       ltr = ltr.toFixed(2);
       setTomPrediction(ltr);
@@ -209,8 +259,31 @@ const Dashboard = () => {
     fetchData();
   }, [fieldValue]);
 
+  const convertToMoisture = (data) => {
+    
+    let temp = data;
+    let percentage = 0.0;
+    let empty = 0;
+    let full = 100;
+    let min_moisture = 800;
+    let max_moisture = 4000;
+    percentage = full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty;
+    return Math.round(percentage);
+  };
+
+  // const convertToMoisture = (x) => {
+    
+  //   let empty = 0;
+  //   let full = 100;
+  //   let min_moisture = 800;
+  //   let max_moisture = 2800;
+  
+  //   let percentage = (full - empty) * (x - min_moisture) / (max_moisture - min_moisture) + empty;
+  //   return Math.round(percentage);
+  // }
+
   //function to call temperature and humidity
-  const getTemp = () => {
+  const getEnvironment = () => {
     const options = {
       method: "GET",
       url: "https://api.openweathermap.org/data/2.5/weather",
@@ -224,6 +297,7 @@ const Dashboard = () => {
     axios
       .request(options)
       .then(function (response) {
+        // console.table(response.data);
         let temp = response.data.main.temp - 273.15;
         temp = temp.toFixed(2);
         setTemperature(temp);
@@ -247,13 +321,13 @@ const Dashboard = () => {
           <div className="card-body">
             {/* progress or lifecycle */}
             <h1 className="card-title mt-5 mx-3 justify-center items-center text-center">
-              X more days till harvest
+              Plant Growth and Development Stages
             </h1>
 
             <div className="flex justify-center ">
               <ul className="steps steps-vertical lg:steps-horizontal">
-                <li className="step step-success">Seedling</li>
-                <li className="step step-success">Vegetative</li>
+                <li className="step">Seedling</li>
+                <li className="step">Vegetative</li>
                 <li className="step">Flowering</li>
                 <li className="step">Fruit development</li>
                 <li className="step">Harvest</li>
@@ -340,7 +414,7 @@ const Dashboard = () => {
                         <div
                           class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                         >
-                          {moisturePercentage} %
+                          {averagePercentage} %
                         </div>
                       </div>
                     </div>
@@ -354,7 +428,7 @@ const Dashboard = () => {
                             <div
                               class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                             >
-                              {sensorData} %
+                              {sensor1Data} %
                             </div>
                           </div>
                         </div>
@@ -367,7 +441,7 @@ const Dashboard = () => {
                             <div
                               class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                             >
-                              {moisturePercentage} %
+                              {sensor2Data} %
                             </div>
                           </div>
                         </div>
@@ -380,7 +454,7 @@ const Dashboard = () => {
                             <div
                               class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                             >
-                              {moisturePercentage} %
+                              {sensor3Data} %
                             </div>
                           </div>
                         </div>
@@ -420,10 +494,10 @@ const Dashboard = () => {
                       {/* duration */}
                       <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
-                          <h2 className="card-title">Irrigation Duration</h2>
+                          <h2 className="card-title">Real Time Flow Rate</h2>
                           <div className="card-actions">
                             <div class="text-3xl font-extrabold text-warning">
-                              {irrigationDuration} mins
+                              {realTimeFlowRate} units
                             </div>
                           </div>
                         </div>
@@ -432,23 +506,22 @@ const Dashboard = () => {
                       {/* ltrs */}
                       <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
-                          <h2 className="card-title">Irrigation Quantity</h2>
+                          <h2 className="card-title">Valve Position</h2>
                           <div className="card-actions">
                             <h3 class="text-3xl font-extrabold text-info">
-                              {irrigationQuantity} ltrs
+                              {valvePosition} 
                             </h3>
                           </div>
                         </div>
                       </div>
 
-
-                        {/* flow meter */}
-                        <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                      {/* flow meter */}
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
-                          <h2 className="card-title">Flow meter</h2>
+                          <h2 className="card-title">Total Water Used</h2>
                           <div className="card-actions">
                             <h3 class="text-3xl font-extrabold text-info">
-                              {irrigationQuantity} ltrs
+                              {totalWaterUsed} 
                             </h3>
                           </div>
                         </div>
@@ -459,7 +532,10 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="card bg-base-100 my-1 shadow-xl  lg:col-span-3 col-span-3">
+            <div
+              className="card bg-base-100 my-1 shadow-xl  lg:col-span-3 col-span-3"
+              onClick={getEnvironment}
+            >
               <div className="card-body  grid grid-cols-3">
                 <h2 className="card-title  lg:col-span-3 col-span-3">
                   Environment
@@ -468,9 +544,7 @@ const Dashboard = () => {
                 {/* current temperature */}
                 <div className="card bg-base-100 shadow-md m-2  lg:col-span-1 col-span-3">
                   <div className="card-body">
-                    <h2 className="card-title" onClick={getTemp}>
-                      Temperature
-                    </h2>
+                    <h2 className="card-title">Temperature</h2>
                     <div className="card-actions">
                       <h3 class="text-3xl font-extrabold">{temperature} °C</h3>
                     </div>
@@ -482,7 +556,7 @@ const Dashboard = () => {
                   <div className="card-body">
                     <h2 className="card-title">Rainfall</h2>
                     <div className="card-actions">
-                      <h3 class="text-3xl font-extrabold ">0 %</h3>
+                      <h3 class="text-3xl font-extrabold ">0</h3>
                     </div>
                   </div>
                 </div>
@@ -492,7 +566,7 @@ const Dashboard = () => {
                   <div className="card-body">
                     <h2 className="card-title">Humidity</h2>
                     <div className="card-actions">
-                      <h3 class="text-3xl font-extrabold ">0 %</h3>
+                      <h3 class="text-3xl font-extrabold ">43 %</h3>
                     </div>
                   </div>
                 </div>
