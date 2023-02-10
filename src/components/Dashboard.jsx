@@ -164,7 +164,11 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    setAveragePercentage((sensor1Data+sensor2Data+sensor3Data)/3);
+    let x = (sensor1Data+sensor2Data+sensor3Data)/3;
+    console.log(x);
+    x= x.toFixed(2);
+    setAveragePercentage(x);
+    
   }, [sensor1Data,sensor2Data,sensor3Data]);
 
   // ---------------------------------------------------------------------Field Data Display---------------------------------------------------------------------------------------
