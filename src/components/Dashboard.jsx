@@ -411,14 +411,14 @@ const Dashboard = () => {
                   <div className="card bg-base-100 shadow-md  col-span-3 ">
                     <div
                       className="card-body hover:bg-base-200"
-                      onClick={() => setSoilDetails(!soilDetails)}
+                      // onClick={() => setSoilDetails(!soilDetails)}
                     >
                       <h2 className="card-title">Average Soil Moisture</h2>
                       <div className="card-actions">
                         <div
                           class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                         >
-                          {averagePercentage} %
+                          {sensor1Data} %
                         </div>
                       </div>
                     </div>
