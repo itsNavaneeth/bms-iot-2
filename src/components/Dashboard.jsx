@@ -496,7 +496,7 @@ const Dashboard = () => {
                   {waterDetails && (
                     <>
                       {/* duration */}
-                      {/* <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
                           <h2 className="card-title">Real Time Flow Rate</h2>
                           <div className="card-actions">
@@ -505,10 +505,10 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </div>
-                      </div> */}
+                      </div>
 
                       {/* ltrs */}
-                      {/* <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
                           <h2 className="card-title">Valve Position</h2>
                           <div className="card-actions">
@@ -517,10 +517,10 @@ const Dashboard = () => {
                             </h3>
                           </div>
                         </div>
-                      </div> */}
+                      </div>
 
                       {/* flow meter */}
-                      {/* <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
+                      <div className="card bg-base-100 shadow-md m-2 lg:col-span-1 col-span-3">
                         <div className="card-body">
                           <h2 className="card-title">Total Water Used</h2>
                           <div className="card-actions">
@@ -529,7 +529,7 @@ const Dashboard = () => {
                             </h3>
                           </div>
                         </div>
-                      </div> */}
+                      </div>
                     </>
                   )}
                 </div>
