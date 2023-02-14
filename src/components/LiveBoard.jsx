@@ -1,38 +1,28 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
-import BiaxialChart from "./BiaxialChart";
 import convData from "./convert";
-import StackedAreaChart from "./StackedAreaChart";
 import LineChartz from "./LineChart";
 
 const LiveBoard = () => {
     //graph section
-    const [link, setLink] = useState(
-        "https://api.thingspeak.com/channels/1985902/feeds.json?api_key=KKDDQDQZP8VLRQWR&"
-    );
-
     const [waterData, setWaterData] = useState([]);
-    const [mode, setMode] = useState(4);
-    const [counter, setCounter] = useState(0);
     const [liveDataVal, setliveDataVal] = useState("(Fetching data)");
     const [livePercentage, setLivePercentage] = useState("(Fetching data)");
     const [moisturePercentageColor, setMoisturePercentageColor] = useState("bg-neutral");
 
 
+    
 
-    const interval = setInterval(() => {
-        setCounter(counter + 1);
-    }, 15000);
 
-    //fetches historical data from thingspeak for graphs
+
 
 
     //Fetch the machine learning model ressults from thingspeak
     useEffect(() => {
-
-        fetch("https://api.thingspeak.com/channels/1958878/fields/3.json?minutes")
+        // console.log("Hello");
+        fetch("")
             .then((response) => response.json())
             .then((info) => {
+                // console.table(info);
                 const data = convData(info, -1);
                 setWaterData(data);
                 setliveDataVal(waterData.data[waterData.data.length - 1].y);
@@ -74,15 +64,7 @@ const LiveBoard = () => {
             });
 
 
-    }, [counter]);
-
-
-    useEffect(() => {
-        //console.table(waterData.data[waterData.data.length - 1].y);
-        //setliveDataVal(waterData.data[waterData.data.length - 1].y);
-        // console.log(waterData.data[waterData.data.length - 1].y)
-    }, [waterData]);
-
+    }, []);
 
 
     return (
