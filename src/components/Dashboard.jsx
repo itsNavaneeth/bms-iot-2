@@ -33,7 +33,17 @@ const Dashboard = () => {
 
   // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
 
-  // turn on the valves
+  // ----------------Toggle between MANUAL and AUTOMATIC Mode----------------------
+  useEffect(() => {
+    let temp;
+    if (wateringSystemMode === "AUTOMATIC") {
+      setBtnState("disabled");
+    } else {
+      setBtnState("");
+    }
+  }, [wateringSystemMode]);
+
+  // ----------------MANUAL Mode Turn on Valve using Ubidots----------------------
   const turnOn = () => {
     const options = {
       method: "POST",
@@ -56,7 +66,7 @@ const Dashboard = () => {
       });
   };
 
-  // turn off the valves
+  // ----------------MANUAL Mode Turn off Valve using Ubidots----------------------
   const turnOff = () => {
     const options = {
       method: "POST",
@@ -79,101 +89,21 @@ const Dashboard = () => {
       });
   };
 
-  // toggle between manual and automatic mode
+  // ----------------Automatic Mode Triggering based on Threshold----------------------
   useEffect(() => {
-    let temp;
-    if (wateringSystemMode === "AUTOMATIC") {
-      setBtnState("disabled");
-
-      const interval = setInterval(() => {
-        const options = {
-          method: "GET",
-          url: "https://api.thingspeak.com/channels/1958878/fields/3.json",
-          params: { results: "1" },
-        };
-
-        axios
-          .request(options)
-          .then(function (response) {
-            setCurrentMoisture(response.data.feeds[0].field3);
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
-
-        fetch(
-          "https://api.thingspeak.com/channels/2028980/feeds.json?results=2"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            temp = convertToMoisture(data.feeds[0].field1);
-            
-            setSensor1Data(temp);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-
-        fetch(
-          "https://api.thingspeak.com/channels/2028981/feeds.json?results=2"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            temp = convertToMoisture(data.feeds[0].field1);
-            setSensor2Data(temp);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-
-        fetch(
-          "https://api.thingspeak.com/channels/2028982/feeds.json?results=2"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            temp = convertToMoisture(data.feeds[0].field1);
-            setSensor3Data(temp);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-
-        fetch(
-          "https://api.thingspeak.com/channels/2028983/feeds.json?api_key=E0TVAT7SEAK0ALI9&results=2"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            // setSensor3Data(data.feeds[0].field1);
-            setRealTimeFlowRate(data.feeds[0].field3);
-            console.table(data);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-
-          
-
-
-      }, 2000);
-
-      return () => clearInterval(interval);
+    if (wateringSystemMode === "MANUAL") {
     } else {
-      setBtnState("");
+      if (currentMoisture > 1800) {
+        turnOn();
+      } else {
+        turnOff();
+      }
     }
-  }, [wateringSystemMode]);
-
-
-  useEffect(() => {
-    let x = (sensor1Data+sensor2Data+sensor3Data)/3;
-    console.log(x);
-    x= x.toFixed(2);
-    setAveragePercentage(x);
-    
-  }, [sensor1Data,sensor2Data,sensor3Data]);
+  }, [currentMoisture, wateringSystemMode]);
 
   // ---------------------------------------------------------------------Field Data Display---------------------------------------------------------------------------------------
 
-  // converting moisture to percentage
+  // ----------------Convert Moisture to Percentage TODO:Change to be triggered by average moisture instead ----------------------
   useEffect(() => {
     let percentage = 0.0;
     let empty = 0;
@@ -181,7 +111,11 @@ const Dashboard = () => {
     let min_moisture = 800;
     let max_moisture = 2800;
 
-    percentage =   full - ((full - empty) * (currentMoisture - min_moisture)) /   (max_moisture - min_moisture) +    empty;
+    percentage =
+      full -
+      ((full - empty) * (currentMoisture - min_moisture)) /
+        (max_moisture - min_moisture) +
+      empty;
     // percentage = 80;
     if (percentage > 100) {
       percentage = 100;
@@ -201,7 +135,92 @@ const Dashboard = () => {
     }
   }, [currentMoisture]);
 
-  //calculate irrigation duration and irrigation quantity
+  // ---------------- Data Fetch from Thingspeak ----------------------
+  useEffect(() => {
+    const interval = setInterval(() => {
+      //--------------Automatic mode data TODO:Change to be triggered by average moisture instead--------------
+      const options = {
+        method: "GET",
+        url: "https://api.thingspeak.com/channels/1958878/fields/3.json",
+        params: { results: "1" },
+      };
+
+      axios
+        .request(options)
+        .then(function (response) {
+          setCurrentMoisture(response.data.feeds[0].field3);
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+
+      //--------------Sensor 1--------------
+      fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
+        .then((response) => response.json())
+        .then((data) => {
+          let temp = convertToPercentage(data.feeds[0].field1);
+
+          setSensor1Data(temp);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      //--------------Sensor 2--------------
+      fetch("https://api.thingspeak.com/channels/2028981/feeds.json?results=2")
+        .then((response) => response.json())
+        .then((data) => {
+          let temp = convertToPercentage(data.feeds[0].field1);
+          setSensor2Data(temp);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      //--------------Sensor 3--------------
+      fetch("https://api.thingspeak.com/channels/2028982/feeds.json?results=2")
+        .then((response) => response.json())
+        .then((data) => {
+          let temp = convertToPercentage(data.feeds[0].field1);
+          setSensor3Data(temp);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      //-------------- Actuators --------------
+      fetch("https://api.thingspeak.com/channels/2019443/feeds.json?results=2")
+        .then((response) => response.json())
+        .then((data) => {
+          //Total Water Used
+          setTotalWaterUsed(data.feeds[0].field4*1000); //TODO:Check the units
+
+          //Real Time Flow Rate
+          setRealTimeFlowRate(data.feeds[0].field5);
+
+          //Valve Position
+          if (data.feeds[0].field6 == 0) {
+            setValvePosition("Open");
+          } else {
+            setValvePosition("Closed");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // ---------------- Calculate Average Moisture ----------------------
+  useEffect(() => {
+    let x = (sensor1Data + sensor2Data + sensor3Data) / 3;
+    x = x.toFixed(2);
+    setAveragePercentage(x);
+  }, [sensor1Data, sensor2Data, sensor3Data]);
+
+  // ---------------- Calculate Irrigation Duration and Irrigation Quantity TODO:Modify to use average moisture ----------------------
   useEffect(() => {
     let duration = 0.0;
     let drip_ltr = 40;
@@ -218,18 +237,7 @@ const Dashboard = () => {
     setIrrigationQuantity(ltr);
   }, [moisturePercentage]);
 
-  // trigger when to turn on and turn off based on threshold
-  useEffect(() => {
-    if (wateringSystemMode === "MANUAL") {
-    } else {
-      if (currentMoisture > 1800) {
-        turnOn();
-      } else {
-        turnOff();
-      }
-    }
-  }, [currentMoisture, wateringSystemMode]);
-
+  // ---------------- Field Value? TODO:Modify to use average moisture ----------------------
   useEffect(() => {
     async function fetchData() {
       const response = await fetch(
@@ -263,30 +271,22 @@ const Dashboard = () => {
     fetchData();
   }, [fieldValue]);
 
-  const convertToMoisture = (data) => {
-    
+  // ---------------- Convert Moisture Voltage to Percentages ----------------------
+  const convertToPercentage = (data) => {
     let temp = data;
     let percentage = 0.0;
     let empty = 0;
     let full = 100;
     let min_moisture = 800;
     let max_moisture = 4000;
-    percentage = full - ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) + empty;
+    percentage =
+      full -
+      ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) +
+      empty;
     return Math.round(percentage);
   };
 
-  // const convertToMoisture = (x) => {
-    
-  //   let empty = 0;
-  //   let full = 100;
-  //   let min_moisture = 800;
-  //   let max_moisture = 2800;
-  
-  //   let percentage = (full - empty) * (x - min_moisture) / (max_moisture - min_moisture) + empty;
-  //   return Math.round(percentage);
-  // }
-
-  //function to call temperature and humidity
+  // ---------------- Fetch Environment Data  ----------------------
   const getEnvironment = () => {
     const options = {
       method: "GET",
@@ -301,10 +301,21 @@ const Dashboard = () => {
     axios
       .request(options)
       .then(function (response) {
-        // console.table(response.data);
+        console.table(response.data);
+
+        //Temperature
         let temp = response.data.main.temp - 273.15;
         temp = temp.toFixed(2);
         setTemperature(temp);
+
+        //Humidity
+        let humid = response.data.main.humidity;
+        setHumidity(humid);
+
+        // //Rainfall
+        // let rainz = response.data.main;
+        // humid = humid.toFixed(2);
+        // setHumidity(humid);
       })
       .catch(function (error) {
         console.error(error);
@@ -488,7 +499,7 @@ const Dashboard = () => {
                         <div
                           class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                         >
-                          {tomPrediction} lts
+                          {tomPrediction} L
                         </div>
                       </div>
                     </div>
@@ -501,7 +512,7 @@ const Dashboard = () => {
                           <h2 className="card-title">Real Time Flow Rate</h2>
                           <div className="card-actions">
                             <div class="text-3xl font-extrabold text-warning">
-                              {realTimeFlowRate} units
+                              {realTimeFlowRate} L/min
                             </div>
                           </div>
                         </div>
@@ -513,7 +524,7 @@ const Dashboard = () => {
                           <h2 className="card-title">Valve Position</h2>
                           <div className="card-actions">
                             <h3 class="text-3xl font-extrabold text-info">
-                              {valvePosition} 
+                              {valvePosition}
                             </h3>
                           </div>
                         </div>
@@ -525,7 +536,7 @@ const Dashboard = () => {
                           <h2 className="card-title">Total Water Used</h2>
                           <div className="card-actions">
                             <h3 class="text-3xl font-extrabold text-info">
-                              {totalWaterUsed} 
+                              {totalWaterUsed} L
                             </h3>
                           </div>
                         </div>
@@ -570,7 +581,7 @@ const Dashboard = () => {
                   <div className="card-body">
                     <h2 className="card-title">Humidity</h2>
                     <div className="card-actions">
-                      <h3 class="text-3xl font-extrabold ">43 %</h3>
+                      <h3 class="text-3xl font-extrabold ">{humidity} %</h3>
                     </div>
                   </div>
                 </div>
