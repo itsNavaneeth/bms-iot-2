@@ -114,7 +114,7 @@ const Dashboard = () => {
     percentage =
       full -
       ((full - empty) * (currentMoisture - min_moisture)) /
-        (max_moisture - min_moisture) +
+      (max_moisture - min_moisture) +
       empty;
     // percentage = 80;
     if (percentage > 100) {
@@ -167,22 +167,24 @@ const Dashboard = () => {
         });
 
       //--------------Sensor 2--------------
-      fetch("https://api.thingspeak.com/channels/2028981/feeds.json?results=2")
+      fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
           let temp = convertToPercentage(data.feeds[0].field1);
-          setSensor2Data(temp);
+          let s2 = parseFloat(temp) + 2.5;
+          setSensor2Data(s2);
         })
         .catch((error) => {
           console.error(error);
         });
 
       //--------------Sensor 3--------------
-      fetch("https://api.thingspeak.com/channels/2028982/feeds.json?results=2")
+      fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
           let temp = convertToPercentage(data.feeds[0].field1);
-          setSensor3Data(temp);
+          let s3 = parseFloat(temp) - 2.3;
+          setSensor3Data(s3);
         })
         .catch((error) => {
           console.error(error);
@@ -193,7 +195,7 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           //Total Water Used
-          setTotalWaterUsed(data.feeds[0].field4*1000); //TODO:Check the units
+          setTotalWaterUsed(data.feeds[0].field4 * 1000); //TODO:Check the units
 
           //Real Time Flow Rate
           setRealTimeFlowRate(data.feeds[0].field5);
@@ -256,7 +258,7 @@ const Dashboard = () => {
       percentage =
         full -
         ((full - empty) * (temp - min_moisture)) /
-          (max_moisture - min_moisture) +
+        (max_moisture - min_moisture) +
         empty;
 
       let duration = (70 - percentage) * 3;
@@ -277,13 +279,16 @@ const Dashboard = () => {
     let percentage = 0.0;
     let empty = 0;
     let full = 100;
-    let min_moisture = 800;
+    let min_moisture = 1100;
     let max_moisture = 4000;
     percentage =
       full -
       ((full - empty) * (temp - min_moisture)) / (max_moisture - min_moisture) +
       empty;
-    return Math.round(percentage);
+    let new_percentage = percentage.toFixed(2);
+
+    // return Math.round(new_percentage);
+    return new_percentage;
   };
 
   // ---------------- Fetch Environment Data  ----------------------
@@ -429,7 +434,7 @@ const Dashboard = () => {
                         <div
                           class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                         >
-                          {averagePercentage} %
+                          {sensor1Data} %
                         </div>
                       </div>
                     </div>
