@@ -31,6 +31,9 @@ const Dashboard = () => {
   const [valvePosition, setValvePosition] = useState("off");
   const [averagePercentage, setAveragePercentage] = useState(0);
 
+  // nava code temp
+  const [sensor1mV, setSensor1mV] = useState(0);
+
   // ---------------------------------------------------------------------Valve Related---------------------------------------------------------------------------------------
 
   // ----------------Toggle between MANUAL and AUTOMATIC Mode----------------------
@@ -158,7 +161,10 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = convertToPercentage(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field1);
+          console.log(data.feeds[0].field1);
+          setSensor1mV(data.feeds[0].field1);
+          // let temp = map_range(3000);
 
           setSensor1Data(temp);
         })
@@ -170,7 +176,7 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = convertToPercentage(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field1);
           let s2 = parseFloat(temp) + 2.5;
           setSensor2Data(s2);
         })
@@ -182,9 +188,10 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = convertToPercentage(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field1);
           let s3 = parseFloat(temp) - 2.3;
-          setSensor3Data(s3);
+          let s3_new = s3.toFixed(2);
+          setSensor3Data(s3_new);
         })
         .catch((error) => {
           console.error(error);
@@ -195,7 +202,9 @@ const Dashboard = () => {
         .then((response) => response.json())
         .then((data) => {
           //Total Water Used
-          setTotalWaterUsed(data.feeds[0].field4 * 1000); //TODO:Check the units
+          let waterUsed = data.feeds[0].field4 * 1000;
+          let waterUsed_new = waterUsed.toFixed(2);
+          setTotalWaterUsed(waterUsed_new); //TODO:Check the units
 
           //Real Time Flow Rate
           setRealTimeFlowRate(data.feeds[0].field5);
@@ -287,9 +296,21 @@ const Dashboard = () => {
       empty;
     let new_percentage = percentage.toFixed(2);
 
+
+
     // return Math.round(new_percentage);
     return new_percentage;
   };
+
+  const map_range = (data, in_min, in_max, out_min, out_max) => {
+    in_min = 3200
+    in_max = 1300
+    out_min = 0
+    out_max = 100
+    let new_percentage = (data - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    return new_percentage.toFixed(2);
+  }
+
 
   // ---------------- Fetch Environment Data  ----------------------
   const getEnvironment = () => {
@@ -434,7 +455,7 @@ const Dashboard = () => {
                         <div
                           class={`text-3xl font-extrabold text-center text-${moisturePercentageColor}`}
                         >
-                          {sensor1Data} %
+                          {sensor1Data} % ({sensor1mV} mV)
                         </div>
                       </div>
                     </div>
