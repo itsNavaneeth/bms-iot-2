@@ -161,9 +161,9 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = map_range(data.feeds[0].field1);
-          console.log(data.feeds[0].field1);
-          setSensor1mV(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field2);
+          console.log(data.feeds[0].field2);
+          setSensor1mV(data.feeds[0].field2);
           // let temp = map_range(3000);
 
           setSensor1Data(temp);
@@ -176,7 +176,7 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = map_range(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field2);
           let s2 = parseFloat(temp) + 2.5;
           setSensor2Data(s2);
         })
@@ -188,7 +188,7 @@ const Dashboard = () => {
       fetch("https://api.thingspeak.com/channels/2028980/feeds.json?results=2")
         .then((response) => response.json())
         .then((data) => {
-          let temp = map_range(data.feeds[0].field1);
+          let temp = map_range(data.feeds[0].field2);
           let s3 = parseFloat(temp) - 2.3;
           let s3_new = s3.toFixed(2);
           setSensor3Data(s3_new);
