@@ -367,8 +367,8 @@ const Dashboard = () => {
 
             <div className="flex justify-center ">
               <ul className="steps steps-vertical lg:steps-horizontal">
-                <li className="step">Seedling</li>
-                <li className="step">Vegetative</li>
+                <li className="step step-success">Seedling</li>
+                <li className="step step-success">Vegetative</li>
                 <li className="step">Flowering</li>
                 <li className="step">Fruit development</li>
                 <li className="step">Harvest</li>
